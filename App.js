@@ -1,14 +1,34 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react'
+import { StyleSheet } from 'react-native';
+import {createStore} from 'redux'
+import middleware from './middleware'
+import reducer from './reducers'
+import {Provider as StoreProvider} from 'react-redux'
+import {NavigationContainer, DarkTheme as NavigationDarkTheme} from '@react-navigation/native'
+import MainView from './components/MainView'
+import {SafeAreaProvider} from 'react-native-safe-area-context'
+import { Provider as PaperProvider, DarkTheme as PaperDarkTheme } from 'react-native-paper'
 
 export default function App() {
+  const store = createStore(reducer, middleware)
+
+  const CombinedDarkTheme = {
+    ...PaperDarkTheme,
+    ...NavigationDarkTheme,
+    colors: { ...PaperDarkTheme.colors, ...NavigationDarkTheme.colors },
+  }
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+    <StoreProvider store={store} style={styles.container}>
+      <PaperProvider theme={CombinedDarkTheme}>
+        <SafeAreaProvider>
+          <NavigationContainer theme={CombinedDarkTheme}>
+            <MainView/>
+          </NavigationContainer>
+        </SafeAreaProvider>
+      </PaperProvider>
+    </StoreProvider>
+  )
 }
 
 const styles = StyleSheet.create({
@@ -18,4 +38,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-});
+})
